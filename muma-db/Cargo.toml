@@ -1,0 +1,12 @@
+[package]
+name = "muma-db"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.72"
+dotenvy = "0.15.7"
+log = "0.4.19"
+sea-orm = { version = "^0", features = [ "sqlx-mysql", "runtime-actix-rustls", "with-chrono", "with-json", "with-uuid" ] }
