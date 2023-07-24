@@ -7,6 +7,8 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.72"
+chrono = "0.4.26"
 dotenvy = "0.15.7"
 log = "0.4.19"
 sea-orm = { version = "^0", features = [ "sqlx-mysql", "runtime-actix-rustls", "with-chrono", "with-json", "with-uuid" ] }
+serde = "1.0.174"

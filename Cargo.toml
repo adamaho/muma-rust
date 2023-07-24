@@ -2,6 +2,5 @@
 
 members = [
     "muma-db",
-    "muma-db-entity",
     "muma-db-migration",
 ]

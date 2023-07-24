@@ -1,5 +1,5 @@
 use clap::{Parser, ValueEnum};
-use muma_db::Database;
+use muma_db::db::Database;
 use muma_db_migration::{Migrator, MigratorTrait};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
