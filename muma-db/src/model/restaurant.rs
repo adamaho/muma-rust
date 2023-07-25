@@ -1,6 +1,9 @@
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
+//////////////////////////////////////////////////////////////////
+/// Model                                                     
+//////////////////////////////////////////////////////////////////
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Deserialize, Serialize)]
 #[sea_orm(table_name = "restaurants")]
 pub struct Model {
