@@ -1,5 +1,4 @@
-use muma_db::db::Database;
-use muma_db::query::restaurant;
+use muma_db::{restaurant, Database};
 
 #[async_std::main]
 async fn main() -> anyhow::Result<()> {
