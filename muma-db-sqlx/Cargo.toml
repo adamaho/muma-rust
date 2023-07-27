@@ -11,5 +11,12 @@ path = "src/lib.rs"
 [dependencies]
 anyhow = "1.0.72"
 async-std = { version = "1", features = ["attributes", "tokio1"] }
+chrono = { version = "0.4.26", features = ["serde"] }
 dotenvy = "0.15.7"
-sqlx = { version = "0.7", features = ["mysql", "runtime-tokio", "tls-rustls"] }
+serde = "1.0.176"
+sqlx = { version = "0.7", features = [
+    "mysql",
+    "chrono",
+    "runtime-tokio",
+    "tls-rustls",
+] }

@@ -21,3 +21,12 @@ Create a new migration by running the following command:
     ```bash
     sqlx migrate add <migration_name>
     ```
+
+### Prepare Queries
+
+Running `prepare` creates a directory `.sqlx` that the compiler uses to validate queries to the database
+and ensure they are fully typesafe. Useful for working offline and running tests in CI.
+
+    ```bash
+    cargo sqlx prepare
+    ```

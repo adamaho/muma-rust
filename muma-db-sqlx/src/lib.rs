@@ -4,6 +4,8 @@ use std::time::Duration;
 
 use sqlx::mysql::{MySqlPool, MySqlPoolOptions};
 
+pub mod user;
+
 #[derive(Debug, Default)]
 pub struct Database {
     database_url: String,
@@ -39,7 +41,7 @@ impl Database {
 
         for item in env_items {
             let (key, value) = item?;
-            if key == String::from("database_url") {
+            if key == String::from("DATABASE_URL") {
                 db.database_url = value;
                 break;
             }
@@ -52,7 +54,7 @@ impl Database {
     ///
     /// Example:
     /// ```
-    /// let db = Database::new("adam", "foobar", "localhost", "5713", "muma");
+    /// let db = Database::new("mysql://...");
     /// let conn = db.connect().await?;
     /// ```
     pub async fn connect(self) -> anyhow::Result<MySqlPool> {
