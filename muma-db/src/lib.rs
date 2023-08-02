@@ -67,6 +67,8 @@ impl Database {
             .connect(self.database_url.as_str())
             .await?;
 
+        sqlx::migrate!().run(&pool).await?;
+
         Ok(pool)
     }
 }
