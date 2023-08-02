@@ -1,4 +1,4 @@
-# muma-db-sqlx
+# muma-db
 
 Handles the database integration with PlanetScale.
 
@@ -8,14 +8,6 @@ Install the sqlx-cli by running:
 
 ```bash
 cargo install sqlx-cli --features rustls
-```
-
-## Environment
-
-Configure your `.env` to include the following environment variables:
-
-```bash
-DATBASE_URL=""
 ```
 
 ## Working with PlanetScale
