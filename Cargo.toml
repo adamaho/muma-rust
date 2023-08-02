@@ -1,3 +1,3 @@
 [workspace]
 
-members = ["muma-db", "muma-db-migration", "muma-db-sqlx"]
+members = ["muma-db"]

@@ -35,13 +35,13 @@ pscale auth login
 Sometimes it is nice to start from a fresh database. Make sure you have the proper branch checked out and run the following command:
 
 ```bash
-pscale database delete
+sqlx migrate revert
 ```
 
 Then recreate the database:
 
 ```bash
-sqlx database create
+sqlx migrate run
 ```
 
 ## Migrations
@@ -53,10 +53,8 @@ Make sure the sqlx-cli is installed. See Install for more details.
 Create a new migration:
 
 ```bash
-sqlx migrate add <migration_name>
+sqlx migrate add -r <migration_name>
 ```
-
-> Note: Migrations are meant to be forward compatible only. This means that migrations cannot be reverted. Any fixes or rollbacks need to happen in a new migration.
 
 ### Running migrations
 
@@ -64,6 +62,12 @@ Run all pending migrations:
 
 ```bash
 sqlx migrate run
+```
+
+Revert any previously run migrations:
+
+```bash
+sqlx migrate revert
 ```
 
 ### Prepare Queries
