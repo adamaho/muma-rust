@@ -1,6 +1,3 @@
 [workspace]
 
-members = [
-    "muma-db",
-    "muma-db-migration",
-]
+members = ["muma-db"]

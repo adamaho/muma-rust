@@ -2,17 +2,21 @@
 name = "muma-db"
 version = "0.1.0"
 edition = "2021"
+publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [lib]
 path = "src/lib.rs"
 
 [dependencies]
 anyhow = "1.0.72"
 async-std = { version = "1", features = ["attributes", "tokio1"] }
-chrono = "0.4.26"
+chrono = { version = "0.4.26", features = ["serde"] }
 dotenvy = "0.15.7"
-log = "0.4.19"
-sea-orm = { version = "^0", features = [ "sqlx-mysql", "runtime-actix-rustls", "with-chrono", "with-json", "with-uuid" ] }
-serde = "1.0.174"
+serde = "1.0.176"
+sqlx = { version = "0.7", features = [
+    "mysql",
+    "chrono",
+    "runtime-tokio",
+    "tls-rustls",
+] }

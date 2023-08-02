@@ -1,30 +1,23 @@
-use muma_db::{restaurant, Database};
+use muma_db::user;
+use muma_db::Database;
 
 #[async_std::main]
 async fn main() -> anyhow::Result<()> {
-    let db = Database::from_env_path(".env.development")?
-        .connect()
-        .await?;
+    let pool = Database::from_env_path(".env")?.connect().await?;
 
-    println!("Create a new restaurant");
-    restaurant::insert(
-        &db,
-        restaurant::InsertRestaurant {
-            name: String::from("I love sweetie very much"),
-            address_line1: None,
-            address_line2: None,
-            city: None,
-            country: None,
-            postal_code: None,
-            state: None,
+    sqlx::migrate!().run(&pool).await?;
+
+    let user_id = user::insert_user(
+        &pool,
+        user::UserForm {
+            username: String::from("adamaho7"),
         },
     )
-    .await?;
+    .await?
+    .try_into()?;
 
-    println!("Select all of the restaurants");
-    let foo = restaurant::select_by_id(&db, 1).await?;
+    let user = user::select_by_id(&pool, user_id).await?;
 
-    println!("restaurants: {:?}", foo);
-
+    println!("{:?}", user);
     Ok(())
 }

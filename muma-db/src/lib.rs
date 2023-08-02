@@ -1,15 +1,14 @@
-pub mod restaurant;
-pub mod user;
-
 use anyhow::Context;
 use std::path::Path;
 use std::time::Duration;
 
-use sea_orm::{ConnectOptions, Database as SeaOrmDatabase, DatabaseConnection};
+use sqlx::mysql::{MySqlPool, MySqlPoolOptions};
+
+pub mod user;
 
 #[derive(Debug, Default)]
 pub struct Database {
-    mysql_url: String,
+    database_url: String,
 }
 
 impl Database {
@@ -23,7 +22,7 @@ impl Database {
     /// ```
     pub fn new(url: &str) -> Self {
         Database {
-            mysql_url: String::from(url),
+            database_url: String::from(url),
         }
     }
 
@@ -42,8 +41,8 @@ impl Database {
 
         for item in env_items {
             let (key, value) = item?;
-            if key == String::from("MYSQL_URL") {
-                db.mysql_url = value;
+            if key == String::from("DATABASE_URL") {
+                db.database_url = value;
                 break;
             }
         }
@@ -55,23 +54,19 @@ impl Database {
     ///
     /// Example:
     /// ```
-    /// let db = Database::new("adam", "foobar", "localhost", "5713", "muma");
+    /// let db = Database::new("mysql://...");
     /// let conn = db.connect().await?;
     /// ```
-    pub async fn connect(self) -> anyhow::Result<DatabaseConnection> {
-        let mut opt = ConnectOptions::new(self.mysql_url).to_owned();
-
-        opt.max_connections(100)
+    pub async fn connect(self) -> anyhow::Result<MySqlPool> {
+        let pool = MySqlPoolOptions::new()
+            .max_connections(10)
             .min_connections(5)
-            .connect_timeout(Duration::from_secs(8))
             .acquire_timeout(Duration::from_secs(8))
             .idle_timeout(Duration::from_secs(8))
             .max_lifetime(Duration::from_secs(8))
-            .sqlx_logging(true)
-            .sqlx_logging_level(log::LevelFilter::Info);
+            .connect(self.database_url.as_str())
+            .await?;
 
-        let db = SeaOrmDatabase::connect(opt).await?;
-
-        Ok(db)
+        Ok(pool)
     }
 }
