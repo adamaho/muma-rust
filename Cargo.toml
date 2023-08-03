@@ -1,3 +1,3 @@
 [workspace]
 
-members = ["muma-api", "muma-db"]
+members = ["muma-api", "muma-config", "muma-db"]
