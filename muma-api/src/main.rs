@@ -1,5 +1,6 @@
 use actix_cors::Cors;
 use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer};
+use muma_config::Config;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 
 /// Handle the index request
@@ -9,6 +10,8 @@ async fn ping(_req: HttpRequest) -> HttpResponse {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    let _config = Config::from_env().expect("(muma-api): missing environment variables");
+
     let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
 
     builder

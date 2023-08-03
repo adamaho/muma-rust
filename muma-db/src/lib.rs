@@ -35,7 +35,7 @@ impl Database {
     /// ```
     pub fn from_env_path(path: &str) -> anyhow::Result<Database> {
         let env_items = dotenvy::from_path_iter(Path::new(path))
-            .with_context(|| format!("muma-db: Failed to read file from {}", path))?;
+            .with_context(|| format!("(muma-db): failed to read file from {}", path))?;
 
         let mut db = Database::default();
 
