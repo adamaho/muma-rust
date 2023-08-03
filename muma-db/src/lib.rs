@@ -1,5 +1,3 @@
-use anyhow::Context;
-use std::path::Path;
 use std::time::Duration;
 
 use sqlx::mysql::{MySqlPool, MySqlPoolOptions};
@@ -24,30 +22,6 @@ impl Database {
         Database {
             database_url: String::from(url),
         }
-    }
-
-    /// Creates a new database instance from a given environment file. Specifically useful for
-    /// development when we need to get a database connection.
-    ///
-    /// Example:
-    /// ```
-    /// let db = Database::from_env("../path");
-    /// ```
-    pub fn from_env_path(path: &str) -> anyhow::Result<Database> {
-        let env_items = dotenvy::from_path_iter(Path::new(path))
-            .with_context(|| format!("(muma-db): failed to read file from {}", path))?;
-
-        let mut db = Database::default();
-
-        for item in env_items {
-            let (key, value) = item?;
-            if key == String::from("DATABASE_URL") {
-                db.database_url = value;
-                break;
-            }
-        }
-
-        Ok(db)
     }
 
     /// Creates a new connection to the database with the appropriate pooling
