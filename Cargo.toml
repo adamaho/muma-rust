@@ -1,3 +1,14 @@
 [workspace]
 
 members = ["muma-api", "muma-config", "muma-db"]
+
+[workspace.dependencies]
+anyhow = { version = "1.0.72" }
+chrono = { version = "0.4.26", features = ["serde"] }
+serde = { version = "1.0", features = ["derive"] }
+sqlx = { version = "0.7", features = [
+    "mysql",
+    "chrono",
+    "runtime-tokio",
+    "tls-rustls",
+] }

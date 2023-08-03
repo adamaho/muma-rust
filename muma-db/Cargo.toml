@@ -5,13 +5,7 @@ edition = "2021"
 publish = false
 
 [dependencies]
-anyhow = "1.0.72"
-chrono = { version = "0.4.26", features = ["serde"] }
-dotenvy = "0.15.7"
-serde = "1.0.176"
-sqlx = { version = "0.7", features = [
-    "mysql",
-    "chrono",
-    "runtime-tokio",
-    "tls-rustls",
-] }
+anyhow = { workspace = true }
+chrono = { workspace = true }
+serde = { workspace = true }
+sqlx = { workspace = true }
