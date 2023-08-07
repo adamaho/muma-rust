@@ -9,7 +9,11 @@ edition = "2021"
 actix-cors = "0.6.4"
 actix-web = { version = "4", features = ["openssl"] }
 anyhow = { workspace = true }
+bytes = "1.4.0"
+futures = "0.3.28"
 muma-config = { path = "../muma-config" }
 muma-db = { path = "../muma-db" }
 openssl = { version = "0.10", features = ["v110"] }
 serde = { workspace = true }
+serde_json = "1.0.104"
+tokio = "1.29.1"
