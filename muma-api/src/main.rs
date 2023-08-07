@@ -6,19 +6,8 @@ use actix_cors::Cors;
 use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer};
 use muma_config::Config;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
-use serde::{Deserialize, Serialize};
 
 use crate::broadcaster::{Broadcaster, MessageQuery};
-
-#[derive(Serialize, Deserialize)]
-struct Count {
-    count: usize,
-}
-
-/// Handle the index request
-async fn ping(_req: HttpRequest) -> HttpResponse {
-    HttpResponse::Ok().body("pong")
-}
 
 /// Handle the update count
 async fn publish(
@@ -32,8 +21,8 @@ async fn publish(
 
 /// Handle the get count
 async fn subscribe(_req: HttpRequest, broadcaster: web::Data<Broadcaster>) -> HttpResponse {
-    let rx = broadcaster.new_client().await;
-    HttpResponse::Ok().streaming(rx)
+    let stream = broadcaster.new_client().await;
+    HttpResponse::Ok().streaming(stream)
 }
 
 #[actix_web::main]
@@ -62,15 +51,12 @@ async fn main() -> std::io::Result<()> {
             .supports_credentials()
             .max_age(3600);
 
-        App::new()
-            .wrap(cors)
-            .route("/ping", web::get().to(ping))
-            .service(
-                web::resource("/streaming")
-                    .app_data(web::Data::from(Arc::clone(&broadcaster)))
-                    .route(web::get().to(subscribe))
-                    .route(web::post().to(publish)),
-            )
+        App::new().wrap(cors).service(
+            web::resource("/streaming")
+                .app_data(web::Data::from(Arc::clone(&broadcaster)))
+                .route(web::get().to(subscribe))
+                .route(web::post().to(publish)),
+        )
     })
     .bind_openssl("localhost:3001", builder)?
     .run()
