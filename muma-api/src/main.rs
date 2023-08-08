@@ -1,4 +1,3 @@
-mod broadcaster;
 mod realtime;
 mod stream;
 
@@ -9,18 +8,18 @@ use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use muma_config::Config;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 
-use crate::broadcaster::Broadcaster;
+use crate::realtime::Realtime;
 
 /// Handle the update count
-async fn publish(_req: HttpRequest, broadcaster: web::Data<Broadcaster>) -> HttpResponse {
-    broadcaster.publish(Message::new("Hello World\n")).await;
+async fn publish(_req: HttpRequest, realtime: web::Data<Realtime>) -> HttpResponse {
+    realtime.publish("Hello World").await;
     HttpResponse::Ok().finish()
 }
 
 /// Handle the get count
-async fn subscribe(_req: HttpRequest, broadcaster: web::Data<Broadcaster>) -> impl Responder {
-    let stream = broadcaster.new_client().await;
-    HttpResponse::Ok().streaming(stream)
+async fn subscribe(_req: HttpRequest, realtime: web::Data<Realtime>) -> impl Responder {
+    let body = realtime.subscribe(10).await;
+    HttpResponse::Ok().body(body)
 }
 
 #[actix_web::main]
@@ -39,7 +38,7 @@ async fn main() -> std::io::Result<()> {
 
     println!("Server started at https://localhost:3001");
 
-    let broadcaster = Broadcaster::new();
+    let realtime = Arc::new(Realtime::new());
 
     HttpServer::new(move || {
         let cors = Cors::default()
@@ -51,7 +50,7 @@ async fn main() -> std::io::Result<()> {
 
         App::new().wrap(cors).service(
             web::resource("/streaming")
-                .app_data(web::Data::from(Arc::clone(&broadcaster)))
+                .app_data(web::Data::from(Arc::clone(&realtime)))
                 .route(web::get().to(subscribe))
                 .route(web::post().to(publish)),
         )

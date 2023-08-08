@@ -1,7 +1,8 @@
 use actix_web::body::{BodySize, MessageBody};
-use bytes::Bytes;
+use bytes::{BufMut, Bytes, BytesMut};
 use bytestring::ByteString;
-use futures_core;
+use futures::stream::Stream;
+use pin_project_lite::pin_project;
 use serde::Serialize;
 use std::convert::Infallible;
 use std::pin::Pin;
@@ -40,15 +41,24 @@ impl Payload {
     pub fn new_json(data: impl Serialize) -> anyhow::Result<Self, serde_json::Error> {
         Ok(Self(serde_json::to_string(&data)?.into()))
     }
+
+    /// Converts the ByteString to Bytes for a stream
+    pub fn into_bytes(&self) -> Bytes {
+        let mut buf = BytesMut::new();
+        buf.put_slice(self.0.as_bytes());
+        buf.put_u8(b'\n');
+        buf.freeze()
+    }
 }
 
 /// A Channel implementation of a stream that accepts
 /// `Payload`'s as messages in the channel
 ///
 /// see the public interface [channel] for how to consume.
-struct ChannelStream(mpsc::Receiver<Payload>);
+#[derive(Debug)]
+pub struct ChannelStream(mpsc::Receiver<Payload>);
 
-impl futures_core::Stream for ChannelStream {
+impl Stream for ChannelStream {
     type Item = Result<Payload, Infallible>;
 
     fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
@@ -56,6 +66,7 @@ impl futures_core::Stream for ChannelStream {
     }
 }
 
+#[derive(Clone)]
 pub struct Sender {
     tx: mpsc::Sender<Payload>,
 }
@@ -76,13 +87,16 @@ impl Sender {
     }
 }
 
-/// Streams ndjson values for the desired messages  
-pub struct Stream {
-    stream: ChannelStream,
+pin_project! {
+    /// Streams ndjson values for the desired messages
+    pub struct NdJsonStream {
+        #[pin]
+        stream: ChannelStream,
+    }
 }
 
-impl Stream {
-    pub fn channel(buffer: usize) -> (Sender<Payload>, Self) {
+impl NdJsonStream {
+    pub fn channel(buffer: usize) -> (Sender, Self) {
         let (tx, rx): (mpsc::Sender<Payload>, mpsc::Receiver<Payload>) = mpsc::channel(buffer);
         (
             Sender { tx },
@@ -93,7 +107,7 @@ impl Stream {
     }
 }
 
-impl MessageBody for Stream {
+impl MessageBody for NdJsonStream {
     type Error = Box<dyn std::error::Error>;
 
     fn size(&self) -> BodySize {
@@ -104,7 +118,9 @@ impl MessageBody for Stream {
         self: Pin<&mut Self>,
         cx: &mut Context<'_>,
     ) -> Poll<Option<Result<Bytes, Self::Error>>> {
-        if let Poll::Ready(msg) = self.stream.poll_next(cx) {
+        let this = self.project();
+
+        if let Poll::Ready(msg) = this.stream.poll_next(cx) {
             return match msg {
                 Some(Ok(msg)) => Poll::Ready(Some(Ok(msg.into_bytes()))),
                 Some(Err(err)) => Poll::Ready(Some(Err(err.into()))),
@@ -115,3 +131,5 @@ impl MessageBody for Stream {
         Poll::Pending
     }
 }
+
+// TODO: Implement responder with the correct headers
