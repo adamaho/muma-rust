@@ -1,26 +1,24 @@
 mod broadcaster;
+mod realtime;
+mod stream;
 
 use std::sync::Arc;
 
 use actix_cors::Cors;
-use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer};
+use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use muma_config::Config;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 
-use crate::broadcaster::{Broadcaster, MessageQuery};
+use crate::broadcaster::Broadcaster;
 
 /// Handle the update count
-async fn publish(
-    _req: HttpRequest,
-    query: web::Query<MessageQuery>,
-    broadcaster: web::Data<Broadcaster>,
-) -> HttpResponse {
-    broadcaster.publish(&query).await;
+async fn publish(_req: HttpRequest, broadcaster: web::Data<Broadcaster>) -> HttpResponse {
+    broadcaster.publish(Message::new("Hello World\n")).await;
     HttpResponse::Ok().finish()
 }
 
 /// Handle the get count
-async fn subscribe(_req: HttpRequest, broadcaster: web::Data<Broadcaster>) -> HttpResponse {
+async fn subscribe(_req: HttpRequest, broadcaster: web::Data<Broadcaster>) -> impl Responder {
     let stream = broadcaster.new_client().await;
     HttpResponse::Ok().streaming(stream)
 }
