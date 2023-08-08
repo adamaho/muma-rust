@@ -3,16 +3,25 @@ mod stream;
 
 use std::sync::Arc;
 
+use crate::realtime::Realtime;
 use actix_cors::Cors;
 use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use muma_config::Config;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
+use serde::Serialize;
 
-use crate::realtime::Realtime;
+#[derive(Serialize, Clone)]
+pub struct Foo {
+    message: String,
+}
 
 /// Handle the update count
 async fn publish(_req: HttpRequest, realtime: web::Data<Realtime>) -> HttpResponse {
-    realtime.publish("Hello World").await;
+    realtime
+        .publish_json(Foo {
+            message: String::from("hello world"),
+        })
+        .await;
     HttpResponse::Ok().finish()
 }
 

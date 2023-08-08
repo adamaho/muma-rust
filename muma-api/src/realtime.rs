@@ -2,25 +2,6 @@ use crate::stream;
 use parking_lot::Mutex;
 use serde::Serialize;
 
-/// alright things that are left todo
-///
-/// 1. Create a custom responder that responds with the stream response or a normal response based on a header
-///
-///
-/// let realtime = Realtime::new();
-///
-/// Publish to a stream:
-/// ```
-/// realtime.publish()
-/// ```
-///
-/// Subsribe to a stream:
-///
-/// ```
-/// realtime.subscribe().await
-/// ```
-///
-
 /// A thread-safe implementation of a stream that can take supported
 /// data types and stream them to a series of connected clients.
 pub struct Realtime {
