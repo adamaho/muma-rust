@@ -89,13 +89,13 @@ impl Sender {
 
 pin_project! {
     /// Streams ndjson values for the desired messages
-    pub struct NdJsonStream {
+    pub struct JsonPatchStream {
         #[pin]
         stream: ChannelStream,
     }
 }
 
-impl NdJsonStream {
+impl JsonPatchStream {
     pub fn channel(buffer: usize) -> (Sender, Self) {
         let (tx, rx): (mpsc::Sender<Payload>, mpsc::Receiver<Payload>) = mpsc::channel(buffer);
         (
@@ -107,7 +107,7 @@ impl NdJsonStream {
     }
 }
 
-impl MessageBody for NdJsonStream {
+impl MessageBody for JsonPatchStream {
     type Error = Box<dyn std::error::Error>;
 
     fn size(&self) -> BodySize {
