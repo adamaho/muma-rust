@@ -1,17 +1,19 @@
 [package]
-name = "muma-api"
+name = "muma-realtime"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-cors = "0.6.4"
 actix-web = { workspace = true }
 anyhow = { workspace = true }
-muma-config = { path = "../muma-config" }
-muma-db = { path = "../muma-db" }
-muma-realtime = { path = "../muma-realtime" }
-openssl = { version = "0.10", features = ["v110"] }
+bytes = "1.4.0"
+bytestring = "1.3.0"
+futures = "0.3.28"
+futures-core = "0.3.28"
+parking_lot = "0.12.1"
+pin-project-lite = "0.2.12"
 serde = { workspace = true }
 serde_json = { workspace = true }
+tokio = "1.30.0"

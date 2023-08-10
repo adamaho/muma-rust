@@ -1,12 +1,9 @@
-mod realtime;
-mod stream;
-
 use std::sync::Arc;
 
-use crate::realtime::Realtime;
 use actix_cors::Cors;
 use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use muma_config::Config;
+use muma_realtime::realtime::Realtime;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use serde::Serialize;
 
